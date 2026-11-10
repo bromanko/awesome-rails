@@ -1,0 +1,100 @@
+{
+  "model": "claude-opus-5-5",
+  "effort": "medium",
+  "cases": [
+    {
+      "case": "before",
+      "elapsedSeconds": 24.82,
+      "recordedCostUsd": 0.6958258,
+      "catalogHash": "e41dd55dc3726d2d6d3fd6d28f8df63ba6f9940bdee79689d14a4fb9d429f1b6",
+      "results": [
+        {
+          "name": "Rails Official Website",
+          "action": "keep",
+          "blockers": []
+        },
+        {
+          "name": "Rails Source Code",
+          "action": "keep",
+          "blockers": []
+        },
+        {
+          "name": "lobsters",
+          "action": "update",
+          "blockers": []
+        }
+      ],
+      "readyPatches": 1,
+      "toolAudit": "Only official Rails website, Rails repository and Lobsters repository fetches observed; no target catalog outcome access detected."
+    },
+    {
+      "case": "after",
+      "elapsedSeconds": 22.16,
+      "recordedCostUsd": 0.6572578000000001,
+      "catalogHash": "78d40a81396892f294c397200712c8fffbd5bde89e45d3a637bb85e344196ed1",
+      "results": [
+        {
+          "name": "Rails Official Website",
+          "action": "keep",
+          "blockers": []
+        },
+        {
+          "name": "Rails Source Code",
+          "action": "keep",
+          "blockers": []
+        },
+        {
+          "name": "lobsters",
+          "action": "keep",
+          "blockers": []
+        }
+      ],
+      "readyPatches": 0,
+      "toolAudit": "Only official Rails website, Rails repository and Lobsters repository fetches observed; no target catalog outcome access detected."
+    },
+    {
+      "case": "current",
+      "elapsedSeconds": 42.41,
+      "recordedCostUsd": 0.6125092,
+      "catalogHash": "182980c9211d36f5e56ebb98789a4f81f039c620a18d31b1bd0a03eaa43a891d",
+      "sourceCatalogSha": "7bbd6fbe39d889ce38ae0fc6b3026bb63eb75570",
+      "results": [
+        {
+          "name": "Rails Official Guide",
+          "action": "keep",
+          "blockers": []
+        },
+        {
+          "name": "FAE",
+          "action": "update",
+          "blockers": []
+        },
+        {
+          "name": "canvas-lms",
+          "action": "keep",
+          "blockers": []
+        }
+      ],
+      "readyPatches": 1,
+      "independentAudit": "FAE README, Gemfile, lockfile support current version correction; Canvas README and Rails Guides support keeps. Raw history claim that original version was accurate in2021 is not verified."
+    }
+  ],
+  "scope": "Known historical pair plus three predeclared current entries; purposefully selected, not an accuracy sample.",
+  "totalRecordedCostUsd": 1.9655928,
+  "infrastructureAttempts": [
+    {
+      "case": "current",
+      "phase": "prepareCatalog command_launch_failed",
+      "modelStages": "blocked; no model invocation",
+      "providerReceipt": null,
+      "reconciliation": "Parent model-free A/B reproduced long TMPDIR failure and short TMPDIR success; original receipts retained unchanged."
+    },
+    {
+      "case": "current-retry",
+      "phase": "prepareCatalog command_launch_failed",
+      "modelStages": "blocked; no model invocation",
+      "providerReceipt": null,
+      "reconciliation": "Parent model-free A/B reproduced long TMPDIR failure and short TMPDIR success; original receipts retained unchanged."
+    }
+  ]
+}
