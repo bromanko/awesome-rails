@@ -1,0 +1,8 @@
+{
+  "upstream": "gramantin/awesome-rails",
+  "upstreamBase": "7bbd6fbe39d889ce38ae0fc6b3026bb63eb75570",
+  "templateRepository": "bromanko/awesome-ratatui",
+  "templateCommit": "91ec0be3aecb93d17b6f18e771ea86b52022f2de",
+  "model": "claude-opus-5-5",
+  "effort": "medium"
+}

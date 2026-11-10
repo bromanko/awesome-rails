@@ -1,0 +1,73 @@
+name: UM freshness review
+on:
+  workflow_dispatch:
+    inputs:
+      slice:
+        description: Zero-based group of three catalog entries to investigate
+        required: true
+        default: '0'
+        type: string
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+concurrency:
+  group: um-freshness
+  cancel-in-progress: false
+jobs:
+  review:
+    if: vars.UM_FRESHNESS_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment: awesome-rails-review
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.12'
+      - name: Install Claude
+        run: |
+          curl -fsSL https://claude.ai/install.sh | bash -s 2.1.284
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Install validation tools
+        run: bash .um/freshness/checks/install.sh
+      - name: Check API key
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: test -n "$ANTHROPIC_API_KEY" || { echo 'Configure ANTHROPIC_API_KEY in the protected environment.'; exit 1; }
+      - name: Run freshness workflow
+        id: um
+        uses: useful-machinery/run-action@3b5d29379bc349df8d95b29b599e71701aa1d017
+        with:
+          um-version: 0.72.1
+          workflow: .um/freshness/workflow.yaml
+          source-root: .um/freshness
+          execution-root: ${{ github.workspace }}
+          export: report
+          inputs: >-
+            {"slice":{"kind":"text","value":${{ toJSON(inputs.slice) }}}}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FRESHNESS_GITHUB_TOKEN: ${{ github.token }}
+          FRESHNESS_REPOSITORY: ${{ github.repository }}
+      - name: Display preview
+        if: always()
+        env:
+          REPORT_PATH: ${{ steps.um.outputs.export-path }}
+          REPORT_STATE: ${{ steps.um.outputs.export-state }}
+        run: |
+          if [ "$REPORT_STATE" = available ] && [ -f "$REPORT_PATH" ]; then
+            cat "$REPORT_PATH" >> "$GITHUB_STEP_SUMMARY"
+          else
+            printf '%s\n' '## UM freshness review' 'No preview was exported. See the UM run for the failed or blocked stage.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Save proposed changes
+        if: steps.um.outputs.export-state == 'available'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: freshness-proposals
+          path: .um/freshness/work/proposals.zip
+          if-no-files-found: error
+          retention-days: 14
